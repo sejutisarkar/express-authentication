@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  .main.container
+    .row
+    .col-md-6.col-md-offset-3
+      h1.display-4.m-b-2 Login
+      form(method = 'POST' action='/login')
+        div.form-group
+          label(for="email") email
+          input.form-control(type="text",id="email" placeholder="email" name="email")
+        div.form-group
+          label(for="Password") password
+          input.form-control(type="password",id="password" placeholder="enter your password" name="password")
+        button.btn.btn-primary(type="submit") LogIn  
+        br
+        a
+          button.btn.btn-primary(type="submit",href="/login/github") Login with Github
