@@ -1,53 +1,16 @@
 const express = require('express');
+var port = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 const User = require('./models/user');
 const session = require('express-session');
 const passport = require('passport');
-const GitHubStrategy = require('passport-github').Strategy;
 const logger = require('morgan');
-const routes = require('./routes/index');
-const auth = require('./routes/auth');
 const MongoStore = require('connect-mongo')(session);//access the sesssion
 const app = express();
+require('./config/passport')(passport);
 
-//var connect = require('connect');
-//var MongoStore = require('connect-mongostore')(connect);
-function generateOrFindUser(accessToken, refreshToken, profile, done){
-  if(profile.emails[0]){
-    User.findOneAndUpdate(
-      {email: profile.emails[0]},
-      {
-        name:profile.displayName || profile.username,
-        email:profile.emails[0].value,
-        photo:profile.photos[0].value
-      },
-      {
-        upsert:true
-      },
-      done
-    );
-  }else{
-    var noEmailError = new Error("your email privacy settings prevent you from signing into BookLovers");
-    done(noEmailError);
-  }
-}
-passport.use(new GitHubStrategy ({
-  clientID:'1bdc7a600e0f44cc1ad5',
-  clientSecret: '344a3f7bc5e0d5c84f80a90062673d589ec3d58d',
-  callbackURL: 'http://localhost:3000/auth/github/return'
-  },
-  generateOrFindUser)
-);
-
-passport.serializeUser((user,done)=>{
-   done(null,user_.id);
- });
-passport.deserializeUser((userId,done)=>{
-   User.findById(userId,(err,done)=>{
-   });
-});
 //parse request
 //app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -91,7 +54,9 @@ app.set('view engine', 'pug');
 app.set('views', __dirname + '/views');
 
 // include routes
+const routes = require('./routes/index');
 app.use('/', routes);
+const auth = require('./routes/auth');
 app.use('/auth',auth);
 
 //catch 404 and forward to error handler
